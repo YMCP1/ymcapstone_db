@@ -8,4 +8,4 @@ router.post('/signup',signupUser);
 router.put('/edit/:id',editUser)
 
 
-module.exports=router
+module.exports=router 
