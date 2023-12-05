@@ -40,8 +40,6 @@ const signupUser = async (req, res) => {
   }
 };
 
-// userController.js
-
 const editUser = async (req, res) => {
   const { userId } = req.params; // Assuming you have userId in the request parameters
   const { firstName, lastName, phone, password, btc, eth } = req.body;
@@ -75,8 +73,18 @@ const editUser = async (req, res) => {
   }
 };
 
+const getAllUsers = async(req,res)=>{
+  try {
+    const user = await User.find();
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(400).json({error:error.message})
+  }
+}
+
 module.exports = {
   loginUser,
   signupUser,
-  editUser, // Add this line
+  editUser,
+  getAllUsers
 };
