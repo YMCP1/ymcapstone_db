@@ -20,7 +20,7 @@ const loginUser = async(req,res)=>{
 
 const signupUser = async (req, res) => {
   console.log("Request body:", req.body); // Add this line
-  const { firstName, lastName, email, password, phone, btc, eth } = req.body;
+  const { firstName, lastName, email, password, phone, btc, eth,role } = req.body;
 
   try {
     const user = await User.signup(
@@ -30,7 +30,8 @@ const signupUser = async (req, res) => {
       password,
       phone,
       btc,
-      eth
+      eth,
+      role,
     );
     const token = createToken(user._id);
     res.status(200).json({ user, token });
@@ -75,7 +76,7 @@ const editUser = async (req, res) => {
 
 const getAllUsers = async(req,res)=>{
   try {
-    const user = await User.find();
+    const user = await User.find({role:0});
     res.status(200).json(user)
   } catch (error) {
     res.status(400).json({error:error.message})
@@ -85,7 +86,7 @@ const getAllUsers = async(req,res)=>{
 const getSingleUser = async(req,res)=>{
   try{
     const {id} = req.params;
-    const user = await User.findById({id});
+    const user = await User.findById(id);
     res.status(200).json(user)
   }catch(error){
     res.status(400).json({error:error.message})

@@ -25,16 +25,20 @@ const userSchema = new Schema({
     required: true,
   },
   btc: {
-    type: Number,
-    default: "0",
+    type: mongoose.Types.Decimal128,
+    default:0,
   },
   eth: {
+    type: mongoose.Types.Decimal128,
+    default:0,
+  },
+  role: {
     type: Number,
-    default: "0",
+    default:0
   },
 });
 
-userSchema.statics.signup = async function (firstName,lastName,email,password,phone,btc,eth) {
+userSchema.statics.signup = async function (firstName,lastName,email,password,phone,btc,eth,role) {
   //validation
   if (
     !firstName ||
@@ -69,7 +73,8 @@ userSchema.statics.signup = async function (firstName,lastName,email,password,ph
     password: hash,
     phone,
     btc,
-    eth
+    eth,
+    role
   });
 
   return user;
