@@ -25,11 +25,11 @@ const userSchema = new Schema({
     required: true,
   },
   btc: {
-    type: mongoose.Types.Decimal128,
+    type: Number,
     default:0,
   },
   eth: {
-    type: mongoose.Types.Decimal128,
+    type: Number,
     default:0,
   },
   role: {
