@@ -1,5 +1,6 @@
 const User = require('../model/userModel');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const createToken=(_id)=>{
     return jwt.sign({_id:_id},process.env.SECRET_KEY,{expiresIn:"10d"})
@@ -42,12 +43,19 @@ const signupUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-  const { userId } = req.params; // Assuming you have userId in the request parameters
+  const { id } = req.params; // Assuming you have userId in the request parameters
   const { firstName, lastName, phone, password, btc, eth } = req.body;
 
   try {
     // Check if the user exists
-    const user = await User.findById(userId);
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log("User ID:", id);
+    console.log("Found User:", user);
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -64,7 +72,7 @@ const editUser = async (req, res) => {
     if (btc !== undefined) user.btc = btc;
     if (eth !== undefined) user.eth = eth;
 
-    // Save the updated user
+    // Save the updated users
     await user.save();
 
     res.status(200).json({ user });
