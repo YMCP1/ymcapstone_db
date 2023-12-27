@@ -1,27 +1,29 @@
-const User = require('../model/userModel');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const User = require("../model/userModel");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const EditHistory = require("../model/editHistoryModel");
 
-const createToken=(_id)=>{
-    return jwt.sign({_id:_id},process.env.SECRET_KEY,{expiresIn:"10d"})
-}
+const createToken = (_id) => {
+  return jwt.sign({ _id: _id }, process.env.SECRET_KEY, { expiresIn: "10d" });
+};
 
-const loginUser = async(req,res)=>{
-    const {email,password}=req.body
+const loginUser = async (req, res) => {
+  const { email, password } = req.body;
 
-    try{
-        const user = await User.login(email,password)
+  try {
+    const user = await User.login(email, password);
 
-        const token = createToken(user._id)
-        res.status(200).json({user,token})
-    }catch(error){
-        res.status(400).json({error:error.message})
-    }
-}
+    const token = createToken(user._id);
+    res.status(200).json({ user, token });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 const signupUser = async (req, res) => {
   console.log("Request body:", req.body); // Add this line
-  const { firstName, lastName, email, password, phone, btc, eth,role } = req.body;
+  const { firstName, lastName, email, password, phone, btc, eth, role } =
+    req.body;
 
   try {
     const user = await User.signup(
@@ -32,7 +34,7 @@ const signupUser = async (req, res) => {
       phone,
       btc,
       eth,
-      role,
+      role
     );
     const token = createToken(user._id);
     res.status(200).json({ user, token });
@@ -43,24 +45,30 @@ const signupUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-  const { id } = req.params; // Assuming you have userId in the request parameters
+  const { id } = req.params;
   const { firstName, lastName, phone, password, btc, eth } = req.body;
 
   try {
-    // Check if the user exists
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    console.log("User ID:", id);
-    console.log("Found User:", user);
+    const editHistory = new EditHistory({
+      userId: user._id,
+      editedFields: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        password: user.password,
+        btc: user.btc,
+        eth: user.eth,
+      },
+      editedAt: new Date(),
+    });
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    await editHistory.save();
 
-    // Update user data
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
     if (phone) user.phone = phone;
@@ -72,24 +80,25 @@ const editUser = async (req, res) => {
     if (btc !== undefined) user.btc = btc;
     if (eth !== undefined) user.eth = eth;
 
-    // Save the updated users
     await user.save();
 
-    res.status(200).json({ user });
+    const allEditHistory = await EditHistory.find({ userId: user._id });
+
+    res.status(200).json({ user, editHistory: allEditHistory });
   } catch (error) {
     console.log("Error in editUser:", error);
     res.status(400).json({ error: error.message });
   }
 };
 
-const getAllUsers = async(req,res)=>{
+const getAllUsers = async (req, res) => {
   try {
-    const user = await User.find({role:0});
-    res.status(200).json(user)
+    const user = await User.find({ role: 0 });
+    res.status(200).json(user);
   } catch (error) {
-    res.status(400).json({error:error.message})
+    res.status(400).json({ error: error.message });
   }
-}
+};
 
 const getSingleUser = async (req, res) => {
   try {
@@ -101,18 +110,15 @@ const getSingleUser = async (req, res) => {
   }
 };
 
-const deleteUser = async(req,res)=>{
+const deleteUser = async (req, res) => {
   try {
-    const {id} =req.params;
+    const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
     res.status(200).json(user);
   } catch (error) {
-    res.status(400).json({error:error.message})
+    res.status(400).json({ error: error.message });
   }
-} 
-
-//asdasdsadsadasdas
-
+};
 
 module.exports = {
   loginUser,
@@ -120,5 +126,5 @@ module.exports = {
   editUser,
   getAllUsers,
   getSingleUser,
-  deleteUser
+  deleteUser,
 };
