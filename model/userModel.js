@@ -26,16 +26,22 @@ const userSchema = new Schema({
   },
   btc: {
     type: Number,
-    default:0,
+    default: 0,
   },
   eth: {
     type: Number,
-    default:0,
+    default: 0,
   },
   role: {
     type: Number,
-    default:0
+    default: 0,
   },
+  editHistory: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserEditHistory",
+    },
+  ]
 });
 
 userSchema.statics.signup = async function (firstName,lastName,email,password,phone,btc,eth,role) {
