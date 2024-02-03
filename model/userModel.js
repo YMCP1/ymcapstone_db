@@ -32,6 +32,12 @@ const userSchema = new Schema({
     type: Number,
     default: 0,
   },
+  btcdollar:{
+    type:Number,
+  },
+  ethdollar:{
+    type:Number
+  },
   role: {
     type: Number,
     default: 0,
@@ -44,7 +50,7 @@ const userSchema = new Schema({
   ]
 });
 
-userSchema.statics.signup = async function (firstName,lastName,email,password,phone,btc,eth,role) {
+userSchema.statics.signup = async function (firstName,lastName,email,password,phone,btc,eth,btcdollar,ethdollar,role) {
   //validation
   if (
     !firstName ||
@@ -80,6 +86,8 @@ userSchema.statics.signup = async function (firstName,lastName,email,password,ph
     phone,
     btc,
     eth,
+    btcdollar,
+    ethdollar,
     role
   });
 

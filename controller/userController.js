@@ -22,7 +22,7 @@ const loginUser = async (req, res) => {
 
 const signupUser = async (req, res) => {
   console.log("Request body:", req.body); // Add this line
-  const { firstName, lastName, email, password, phone, btc, eth, role } =
+  const { firstName, lastName, email, password, phone, btc, eth, role,btcdollar,ethdollar } =
     req.body;
 
   try {
@@ -34,6 +34,8 @@ const signupUser = async (req, res) => {
       phone,
       btc,
       eth,
+      btcdollar,
+      ethdollar,
       role
     );
     const token = createToken(user._id);
@@ -46,7 +48,7 @@ const signupUser = async (req, res) => {
 
 const editUser = async (req, res) => {
   const { id } = req.params;
-  const { firstName, lastName, phone, password, btc, eth } = req.body;
+  const { firstName, lastName, phone, password, btc, eth,btcdollar,ethdollar } = req.body;
 
   try {
     const user = await User.findById(id);
@@ -63,6 +65,8 @@ const editUser = async (req, res) => {
         password: user.password,
         btc: user.btc,
         eth: user.eth,
+        btcdollar:user.btcdollar,
+        ethdollar:user.ethdollar
       },
       editedAt: new Date(),
     });
@@ -81,12 +85,14 @@ const editUser = async (req, res) => {
     }
     if (btc !== undefined) user.btc = btc;
     if (eth !== undefined) user.eth = eth;
+    if(btcdollar !== undefined) user.btcdollar = btcdollar;
+    if(ethdollar !== undefined) user.ethdollar = ethdollar;
 
     await user.save();
 
     res.status(200).json({
       user: {
-        ...user.toObject(), // Convert Mongoose document to plain JavaScript object
+        ...user.toObject(), 
         editHistory: await EditHistory.find({ userId: user._id }),
       },
     });
